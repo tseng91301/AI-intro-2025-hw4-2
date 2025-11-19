@@ -43,6 +43,8 @@ try:
 except Exception:
     OPENAI_AVAILABLE = False
 
+RESOURCE_ADD_INTERVAL = 5 # second(s)
+
 # --- Data classes ---
 @dataclass
 class Resource:
@@ -60,7 +62,7 @@ class Planet:
     type: int = 1  # 0: none, 1: resource, 2: enemy
     initial_value: int = 0
     resources: List[Resource] = field(default_factory=list)
-    discovered_time: int = 0  # game-turn when discovered
+    discovered_time: int = 0  # time when discovered
 
 @dataclass
 class GameState:
@@ -118,8 +120,6 @@ def call_llm_for_planet() -> str:
                 max_tokens=700
             )
             content = resp.choices[0].message["content"].strip()
-
-            print(content)
 
             # Ensure output is valid JSON
             json.loads(content)
@@ -236,8 +236,10 @@ def generate_planet(game_state: GameState) -> Planet:
     resources = []
     for r in parsed.get("resources", []):
         resources.append(Resource(**r))
+    i_v = parsed.get("initial_value", 0)
+    t = parsed.get("type", 1)
     planet = Planet(id=pid, name=parsed.get("name","Unnamed"), description=parsed.get("description",""),
-                    resources=resources, discovered_time=game_state.turn)
+                    resources=resources, discovered_time=game_state.turn, type=t, initial_value=i_v)
     return planet
 
 def propose_and_evaluate_problem(game_state: GameState, planet: Planet):
@@ -260,6 +262,8 @@ def propose_and_evaluate_problem(game_state: GameState, planet: Planet):
         lines.append(l)
 
     solution_text = "\n".join(lines).strip()
+
+    print("正在用你的方法解決問題... 等待期間來看一下《人工智慧概論》吧！")
 
     # AI 評估你的方案
     prompt = (
@@ -315,9 +319,11 @@ def explore_new_planet(game_state: GameState):
         for r in planet.resources:
             print(f" - {r.name}: 價值={r.value}, 運輸費用={r.transportation_fee}")
         print(f"回程時順便帶了一些戰利品，獲得 ${planet.initial_value}")
+        game_state.assets += planet.initial_value
     elif planet.type == 2:
         print("完蛋，遭到敵人入侵！")
         print(f"與他們戰鬥又損失了 ${-planet.initial_value}")
+        game_state.assets += planet.initial_value
     return planet
 
 def transport_resources(game_state: GameState, planet: Planet):
@@ -368,8 +374,8 @@ def initial_game_state() -> GameState:
     earth = Planet(id="earth", name="Earth", description="起始星球: 人類古文明時期的地球。.", discovered_time=0)
     # Earth has modest resources to begin
     earth.resources = [
-        Resource(name="木材", description="可以提供建築等材料.", type=1, value=10, transportation_fee=5, last_transport_time=0),
-        Resource(name="金屬礦石", description="基本金屬礦石.", type=1, value=25, transportation_fee=15, last_transport_time=0),
+        Resource(name="木材", description="可以提供建築等材料.", value=10, transportation_fee=5, last_transport_time=0),
+        Resource(name="金屬礦石", description="基本金屬礦石.", value=25, transportation_fee=15, last_transport_time=0),
     ]
     gs.planets[earth.id] = earth
     return gs
@@ -448,7 +454,9 @@ def main_loop():
             print("負債過高，已無法挽回。遊戲結束。")
             gs.game_over = True
 
-        print("感謝遊玩《Starseed Protocol 星辰種子計畫》！你的最終資產為：", gs.assets)
+        print(f"目前資產: ${gs.assets}")
+
+    print("感謝遊玩《Starseed Protocol 星辰種子計畫》！你的最終資產為：", gs.assets)
 
 
 if __name__ == "__main__":
