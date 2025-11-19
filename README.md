@@ -93,3 +93,5 @@ pip install -r requirements.txt
 ```
 * 在每個 `resources` 底下的 `value` 參數是資源價值，可以增加它來更快速的獲取收益
 * `assets` 紀錄當下資產，可以直接增加或減少
+#### 載入範例存檔
+* 複製 `save_samples/` 裡面的存檔到 `saves/` 底下 (名字不要改變)

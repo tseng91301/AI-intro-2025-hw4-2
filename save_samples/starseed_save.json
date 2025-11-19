@@ -1,0 +1,125 @@
+{
+  "turn": 0,
+  "assets": 11676,
+  "planets": {
+    "0": {
+      "id": "0",
+      "name": "Earth",
+      "description": "\u8d77\u59cb\u661f\u7403: \u5730\u7403",
+      "type": 1,
+      "initial_value": 0,
+      "resources": [
+        {
+          "name": "\u6728\u6750",
+          "description": "\u53ef\u4ee5\u63d0\u4f9b\u5efa\u7bc9\u7b49\u6750\u6599.",
+          "value": 10,
+          "transportation_fee": 5,
+          "last_transport_time": 1763560985
+        },
+        {
+          "name": "\u91d1\u5c6c\u7926\u77f3",
+          "description": "\u57fa\u672c\u91d1\u5c6c\u7926\u77f3.",
+          "value": 25,
+          "transportation_fee": 15,
+          "last_transport_time": 1763561287
+        }
+      ],
+      "discovered_time": 1763557911
+    },
+    "6071": {
+      "id": "6071",
+      "name": "Xenophon",
+      "description": "\u4f4d\u65bc\u6d85\u58a8\u897f\u65af\u9280\u6cb3\u7684\u65b0\u767c\u73fe\u661f\u7403Xenophon\u3002\u7bc0\u808b\u78fa\u77f3\u7926\u5e8a\u5341\u5206\u8c50\u5bcc\uff0c\u5ca9\u5c64\u7d50\u69cb\u5805\u786c\uff0c\u74b0\u5883\u60e1\u52a3\u3002",
+      "type": 1,
+      "initial_value": 1500,
+      "resources": [
+        {
+          "name": "\u7bc0\u808b\u78fa\u77f3",
+          "description": "\u5177\u6709\u767c\u96fb\u80fd\u529b\u7684\u7a00\u6709\u7926\u77f3\uff0c\u5f62\u614b\u986f\u5176\u8272\u70ba\u7126\u70ad\u9ed1\u3002",
+          "value": 180,
+          "transportation_fee": 350,
+          "last_transport_time": 1763561206
+        },
+        {
+          "name": "\u6e05\u93e1\u77f3",
+          "description": "\u9019\u7a2e\u5bf6\u77f3\u539f\u77f3\u53ef\u4f5c\u70ba\u93e1\u5b50\u4f7f\u7528\uff0c\u5177\u6709\u9ad8\u50f9\u503c\u3002",
+          "value": 120,
+          "transportation_fee": 500,
+          "last_transport_time": 1763561299
+        },
+        {
+          "name": "\u7faf\u78e8\u77f3",
+          "description": "\u80fd\u7528\u65bc\u5efa\u9020\u5efa\u7bc9\u7684\u57fa\u672c\u8cc7\u6e90, \u5177\u76f8\u5c0d\u8f03\u4f4e\u7684\u50f9\u503c\u3002",
+          "value": 60,
+          "transportation_fee": 250,
+          "last_transport_time": 1763561093
+        }
+      ],
+      "discovered_time": 1763561093
+    },
+    "8894": {
+      "id": "8894",
+      "name": "Gliese581c",
+      "description": "\u9019\u500b\u661f\u7403\u4f4d\u65bc\u8a31\u591a\u661f\u7cfb\u4e4b\u5916\uff0c\u5bcc\u9952\u4e14\u7f8e\u9e97\u3002\u5730\u5f62\u591a\u8b8a\uff0c\u64c1\u6709\u5ee3\u5927\u7684\u68ee\u6797\u548c\u5c71\u8108\uff0c\u53ca\u6975\u5730\u7684\u51b0\u5ddd\u3002\u6c23\u5019\u6eab\u548c\uff0c\u751f\u614b\u8c50\u5bcc\u3002",
+      "type": 1,
+      "initial_value": 3650,
+      "resources": [
+        {
+          "name": "\u7d05\u8cea\u77f3",
+          "description": "\u4e00\u7a2e\u5728\u5730\u4e0b\u767c\u73fe\u7684\u7279\u6b8a\u7926\u77f3\uff0c\u5177\u6709\u9ad8\u71b1\u5bb9\u91cf\u548c\u5c0e\u96fb\u6027\uff0c\u61c9\u7528\u5728\u80fd\u6e90\u8207\u96fb\u5b50\u7522\u696d\u3002",
+          "value": 120,
+          "transportation_fee": 290,
+          "last_transport_time": 1763561118
+        },
+        {
+          "name": "\u85cd\u6676\u8349",
+          "description": "\u4e00\u7a2e\u6709\u8457\u85cd\u8272\u5149\u6fa4\u7684\u73cd\u8cb4\u690d\u7269\uff0c\u542b\u6709\u8c50\u5bcc\u7684\u71df\u990a\u548c\u4eba\u985e\u672a\u77e5\u7684\u751f\u547d\u7269\u8cea\u3002",
+          "value": 200,
+          "transportation_fee": 550,
+          "last_transport_time": 1763561118
+        },
+        {
+          "name": "\u91d1\u5c6c\u4f9b\u61c9",
+          "description": "\u5177\u6709\u8457\u985e\u4f3c\u92c1\u7684\u8f15\u8cea\u91d1\u5c6c\u4f9b\u61c9\u3002",
+          "value": 150,
+          "transportation_fee": 350,
+          "last_transport_time": 1763561192
+        }
+      ],
+      "discovered_time": 1763561118
+    },
+    "8505": {
+      "id": "8505",
+      "name": "Xyratu",
+      "description": "\u4f4d\u65bc\u5409\u4e9e\u5eab\u661f\u7cfb\uff0c\u64c1\u6709\u8c50\u5bcc\u7684\u7926\u7269\u8cc7\u6e90\u8207\u7368\u7279\u7684\u751f\u614b\u74b0\u5883\u3002\u5176\u5730\u5f62\u8d77\u4f0f\u4e0d\u5e73\uff0c\u6c23\u5019\u5145\u6eff\u8b8a\u5316\u3002",
+      "type": 1,
+      "initial_value": 1628,
+      "resources": [
+        {
+          "name": "\u7d22\u7f85\u7c73\u6c34\u6676",
+          "description": "\u50f9\u503c\u9f90\u5927\u7684\u534a\u5c0e\u9ad4\u6750\u6599\uff0c\u88ab\u5ee3\u6cdb\u61c9\u7528\u5728\u5404\u985e\u9ad8\u79d1\u6280\u7522\u54c1\u4e2d\u3002",
+          "value": 180,
+          "transportation_fee": 539,
+          "last_transport_time": 1763561255
+        },
+        {
+          "name": "\u6cf0\u5854\u5c3c\u4e9e\u7926\u77f3",
+          "description": "\u542b\u6709\u5927\u91cf\u7a00\u6709\u91d1\u5c6c\uff0c\u5177\u6709\u5f37\u5927\u7684\u80fd\u91cf\u8f38\u51fa\u6027\u80fd\u3002",
+          "value": 156,
+          "transportation_fee": 468,
+          "last_transport_time": 1763561255
+        },
+        {
+          "name": "\u51f1\u6492\u7d05\u6c99",
+          "description": "\u5145\u6eff\u4e86\u7d30\u83cc\u6d3b\u52d5\u7684\u751f\u7269\u7269\u8cea\uff0c\u53ef\u4ee5\u7528\u65bc\u88fd\u4f5c\u751f\u7269\u80a5\u6599\u3002",
+          "value": 95,
+          "transportation_fee": 385,
+          "last_transport_time": 1763561255
+        }
+      ],
+      "discovered_time": 1763561255
+    }
+  },
+  "current_planet_id": "0",
+  "game_over": false
+}
