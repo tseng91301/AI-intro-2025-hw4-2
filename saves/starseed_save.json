@@ -1,0 +1,32 @@
+{
+  "turn": 0,
+  "assets": 1500,
+  "planets": {
+    "0": {
+      "id": "0",
+      "name": "Earth",
+      "description": "\u8d77\u59cb\u661f\u7403: \u5730\u7403",
+      "type": 1,
+      "initial_value": 0,
+      "resources": [
+        {
+          "name": "\u6728\u6750",
+          "description": "\u53ef\u4ee5\u63d0\u4f9b\u5efa\u7bc9\u7b49\u6750\u6599.",
+          "value": 10,
+          "transportation_fee": 5,
+          "last_transport_time": 1763557911
+        },
+        {
+          "name": "\u91d1\u5c6c\u7926\u77f3",
+          "description": "\u57fa\u672c\u91d1\u5c6c\u7926\u77f3.",
+          "value": 25,
+          "transportation_fee": 15,
+          "last_transport_time": 1763557911
+        }
+      ],
+      "discovered_time": 1763557911
+    }
+  },
+  "current_planet_id": "0",
+  "game_over": false
+}
