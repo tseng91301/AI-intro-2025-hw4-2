@@ -19,6 +19,7 @@ import json
 import os
 import random
 import time
+import datetime
 from dataclasses import dataclass, asdict, field
 from typing import List, Dict, Any, Optional
 
@@ -126,42 +127,7 @@ def call_llm_for_planet() -> str:
             return content
 
         except Exception as e:
-            print("OpenAI error, using fallback mock planet:", e)
-
-    # ==========================
-    # Fallback: mock planet
-    # ==========================
-    print("I: Error with LLM API, using mock planet.")
-    pid = f"planet_{random.randint(1000,9999)}"
-    name = random.choice(["Aurelia", "Thalos", "Nyx", "Keto", "Pelion"]) + "-" + str(random.randint(1,99))
-    desc = random.choice([
-        "稀薄的大氣層下，地平線上有兩顆太陽並列。",
-        "濃厚的甲烷雲層覆蓋天空，並伴隨頻繁的電暴。",
-        "冰封的地表之下隱藏著廣大的地下海洋。",
-        "多岩石的世界，富含金屬礦脈，但地表植物稀少。"
-    ])
-    resources = []
-    for _ in range(random.randint(1, 3)):
-        rtype = random.choice([0,1,2])
-        val = random.randint(-300, 1000) if rtype == 2 else random.randint(50, 800)
-        fee = max(10, int(abs(val) * random.uniform(0.05, 0.25)))
-        resources.append({
-            "name": f"Resource-{random.choice(['X','Y','Z','Q'])}{random.randint(1,99)}",
-            "description": "A naturally occurring deposit.",
-            "type": rtype,
-            "value": val,
-            "transportation_fee": fee,
-            "last_transport_time": 0
-        })
-
-    return json.dumps({
-        "id": pid,
-        "name": name,
-        "description": desc,
-        "resources": resources,
-        "discovered_time": 0
-    }, indent=2)
-
+            print("OpenAI 不給力啊!", e)
 
 def call_llm_for_problem(prompt: str) -> str:
     """
@@ -195,7 +161,6 @@ def call_llm_for_problem(prompt: str) -> str:
     return fallback
 
 
-
 def call_llm_for_evaluation(prompt: str) -> str:
     """
     Calls OpenAI to evaluate a player's proposed solution.
@@ -225,21 +190,23 @@ def call_llm_for_evaluation(prompt: str) -> str:
 # --- Game logic functions ---
 def generate_planet(game_state: GameState) -> Planet:
     raw = call_llm_for_planet()
+    now_time = int(time.time())
     try:
-        parsed = json.loads(raw)
+        parsed: dict = json.loads(raw)
     except Exception:
         # Try to extract JSON substring
         start = raw.find("{")
         end = raw.rfind("}")+1
-        parsed = json.loads(raw[start:end])
-    pid = parsed.get("id", f"planet_{random.randint(10000,99999)}")
+        parsed: dict = json.loads(raw[start:end])
+    pid = f"{random.randint(0, 10000)}"
     resources = []
     for r in parsed.get("resources", []):
+        r["last_transport_time"] = now_time
         resources.append(Resource(**r))
     i_v = parsed.get("initial_value", 0)
     t = parsed.get("type", 1)
     planet = Planet(id=pid, name=parsed.get("name","Unnamed"), description=parsed.get("description",""),
-                    resources=resources, discovered_time=game_state.turn, type=t, initial_value=i_v)
+                    resources=resources, discovered_time=now_time, type=t, initial_value=i_v)
     return planet
 
 def propose_and_evaluate_problem(game_state: GameState, planet: Planet):
@@ -292,7 +259,6 @@ def propose_and_evaluate_problem(game_state: GameState, planet: Planet):
     print("資產變化:", asset_change)
 
     game_state.assets += asset_change
-    print("目前資產:", game_state.assets)
 
     return {
         "feasible": feasible,
@@ -300,16 +266,19 @@ def propose_and_evaluate_problem(game_state: GameState, planet: Planet):
         "asset_change": asset_change
     }
 
-
 def explore_new_planet(game_state: GameState):
-    cost = 200 + int((len(game_state.planets) - 1) * 150)
+    cost = 2000 + int(((len(game_state.planets) - 1)**1.7) * 350)
     print(f"這次探索任務花費: ${cost} .")
     if game_state.assets < cost:
-        print("沒錢錢...")
+        print("我們需要錢錢...")
         return None
     game_state.assets -= cost
     print("正在從茫茫星海中探索新星球... 等待期間來看一下《人工智慧概論》吧！")
     planet = generate_planet(game_state)
+    if planet is None:
+        game_state.assets += cost
+        print("出了一點小意外，本次旅程失敗，花費會全額退還")
+        return None
     game_state.planets[planet.id] = planet
     print(f"發現星球 {planet.name} (id {planet.id})\n說明: {planet.description}\n")
     if planet.type == 0:
@@ -327,10 +296,13 @@ def explore_new_planet(game_state: GameState):
     return planet
 
 def transport_resources(game_state: GameState, planet: Planet):
+    now_time = int(time.time())
     print(f"從 {planet.name} 運輸資源到 Earth. 目前資產: ${game_state.assets}")
     for i, r in enumerate(planet.resources):
-        print(f"{i}. {r.name} | 價值={r.value} | 費用={r.transportation_fee} | 上次運輸時間={r.last_transport_time}")
-    print("Select index to transport (or blank to cancel):")
+        now_value = min((now_time - r.last_transport_time), 180) // 15 * r.value - r.transportation_fee
+        ltt = datetime.datetime.fromtimestamp(r.last_transport_time).strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{i}. {r.name} | 價值={r.value} | 運費={r.transportation_fee} | 扣除運費淨利潤={now_value}| 上次運輸時間={ltt}")
+    print("輸入要輸送資源的項次 (直接按 Enter 取消操作):")
     sel = input().strip()
     if sel == "":
         return
@@ -341,16 +313,14 @@ def transport_resources(game_state: GameState, planet: Planet):
         print("Invalid selection.")
         return
     # compute gain: value * (turn - last_transport_time) - fee
-    delta_time = max(1, game_state.turn - r.last_transport_time)
-    gain = r.value * delta_time - r.transportation_fee
+    gain = min((now_time - r.last_transport_time), 180) // 15 * r.value - r.transportation_fee
     if game_state.assets < r.transportation_fee:
         print("哇，連運費都付不起了 : (")
         return
     # pay transportation fee then add value*delta_time
-    game_state.assets -= r.transportation_fee
-    game_state.assets += r.value * delta_time
-    r.last_transport_time = game_state.turn
-    print(f"成功運送 {r.name}. 資產變化: ${ -r.transportation_fee + r.value * delta_time }")
+    game_state.assets += gain
+    r.last_transport_time = now_time
+    print(f"成功運送 {r.name}. 資產變化: ${ gain }")
     print("目前資產: $", game_state.assets, sep="")
 
 def save_game(game_state: GameState, path=SAVE_PATH):
@@ -370,12 +340,13 @@ def load_game(path=SAVE_PATH) -> Optional[GameState]:
 
 # --- Initialize default Earth as starting planet ---
 def initial_game_state() -> GameState:
-    gs = GameState(turn=0, assets=1500, current_planet_id="earth", game_over=False)
-    earth = Planet(id="earth", name="Earth", description="起始星球: 人類古文明時期的地球。.", discovered_time=0)
+    now_time = int(time.time())
+    gs = GameState(turn=0, assets=1500, current_planet_id="0", game_over=False)
+    earth = Planet(id="0", name="Earth", description="起始星球: 地球", discovered_time=now_time)
     # Earth has modest resources to begin
     earth.resources = [
-        Resource(name="木材", description="可以提供建築等材料.", value=10, transportation_fee=5, last_transport_time=0),
-        Resource(name="金屬礦石", description="基本金屬礦石.", value=25, transportation_fee=15, last_transport_time=0),
+        Resource(name="木材", description="可以提供建築等材料.", value=10, transportation_fee=5, last_transport_time=now_time),
+        Resource(name="金屬礦石", description="基本金屬礦石.", value=25, transportation_fee=15, last_transport_time=now_time),
     ]
     gs.planets[earth.id] = earth
     return gs
@@ -385,19 +356,19 @@ def main_loop():
     print("=== Starseed Protocol (Prototype) ===\n")
     gs = load_game() or initial_game_state()
     while not gs.game_over:
-        print("\n--- 回合", gs.turn, " ---")
+        print("\n--- Control Panel ---")
         print(f"資產: ${gs.assets}")
         print("目前探索到的星球:")
         for pid, p in gs.planets.items():
-            print(f" - {p.name} (id={pid}) 資源={len(p.resources)} 發現時的回合數={p.discovered_time}")
+            dtt = datetime.datetime.fromtimestamp(p.discovered_time).strftime("%Y-%m-%d %H:%M:%S")
+            print(f" - {p.name} (id={pid}) 資源={len(p.resources)} 發現時的時間={dtt}")
         print("\n可執行的動作：")
         print(" 1) 處理星球上的在地問題（從清單中選擇星球）")
         print(" 2) 探索新星球（花費會隨回合增加）")
         print(" 3) 將資源運送回地球")
         print(" 4) 儲存遊戲")
         print(" 5) 載入遊戲")
-        print(" 6) 結束回合（時間推進）")
-        print(" 7) 離開遊戲")
+        print(" 6) 離開遊戲")
 
         cmd = input("請選擇動作編號：").strip()
 
@@ -414,7 +385,7 @@ def main_loop():
             explore_new_planet(gs)
 
         elif cmd == "3":
-            print("要從哪個星球運送資源？（地球不產生運輸收益）")
+            print("要從哪個星球運送資源(填入 id)？")
             pid = input().strip()
             if pid in gs.planets:
                 transport_resources(gs, gs.planets[pid])
@@ -430,17 +401,6 @@ def main_loop():
                 gs = loaded
 
         elif cmd == "6":
-            gs.turn += 1
-            print("已進入回合", gs.turn)
-            # small upkeep cost per turn
-            upkeep = max(0, int(5 + gs.turn * 1))
-            gs.assets -= upkeep
-            print(f"本回合維持費扣除 {upkeep} 資產。")
-            if gs.assets < 0:
-                print("你的資產已經低於 0，破產！遊戲結束。")
-                gs.game_over = True
-
-        elif cmd == "7":
             print("確定要離開？需要先儲存遊戲嗎？ (y/n)")
             if input().lower().startswith("y"):
                 save_game(gs)
